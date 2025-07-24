@@ -1,4 +1,3 @@
-CREATE DATABASE blogs_app;
 CREATE TABLE blogs (
     id SERIAL PRIMARY KEY,
     author text,
