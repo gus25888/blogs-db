@@ -1,7 +1,7 @@
 const router = require('express').Router()
 const { Blog } = require('../models')
 
-router.get('/', async (req, res) => {
+router.get('/', async (req, res, next) => {
   try {
     const blogsFound = await Blog.findAll()
     if (blogsFound) {
@@ -10,31 +10,21 @@ router.get('/', async (req, res) => {
       res.status(404).end()
     }
   } catch (error) {
-    console.error("Error detected. Details:\n", error)
-    res.status(500).end()
+    next(error)
   }
 })
 
-router.post('/', async (req, res) => {
+router.post('/', async (req, res, next) => {
   try {
     const { title, author, url, likes } = req.body
-    if (!title) {
-      res.statusCode = 400
-      res.send("Title cannot be null").end()
-    }
-    if (!url) {
-      res.statusCode = 400
-      res.send("Url cannot be null").end()
-    }
     const blogCreated = await Blog.create({ title, author, url, likes })
     res.json(blogCreated)
   } catch (error) {
-    console.error("Error detected. Details:\n", error)
-    res.status(500).end()
+    next(error)
   }
 })
 
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', async (req, res, next) => {
   try {
     const blogFound = await Blog.findByPk(req.params.id)
     if (blogFound) {
@@ -44,12 +34,11 @@ router.delete('/:id', async (req, res) => {
       res.status(404).end()
     }
   } catch (error) {
-    console.error("Error detected. Details:\n", error)
-    res.status(500).end()
+    next(error)
   }
 })
 
-router.put('/:id', async (req, res) => {
+router.put('/:id', async (req, res, next) => {
   try {
     const blogFound = await Blog.findByPk(req.params.id)
     const { likes } = req.body
@@ -67,8 +56,7 @@ router.put('/:id', async (req, res) => {
     await blogFound.save()
     res.json(blogFound)
   } catch (error) {
-    console.error("Error detected. Details:\n", error)
-    res.status(500).end()
+    next(error)
   }
 })
 
