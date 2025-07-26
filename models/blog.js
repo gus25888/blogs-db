@@ -1,10 +1,9 @@
-require('dotenv').config()
-const { DataTypes, Model, Sequelize } = require('sequelize')
-const sequelize = new Sequelize(process.env.DATABASE_URL)
+const { sequelize } = require('../util/db')
+const { DataTypes, Model } = require('sequelize')
 
-class Blogs extends Model { }
+class Blog extends Model { }
 
-Blogs.init({
+Blog.init({
   id: {
     type: DataTypes.INTEGER,
     primaryKey: true,
@@ -30,6 +29,4 @@ Blogs.init({
   modelName: 'blogs',
 },);
 
-Blogs.sync()
-
-module.exports = Blogs
+module.exports = Blog
