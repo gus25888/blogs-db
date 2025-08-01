@@ -11,9 +11,14 @@ User.init({
     autoIncrement: true
   },
   username: {
-    type: DataTypes.STRING(10),
+    type: DataTypes.STRING,
     unique: true,
-    allowNull: false
+    allowNull: false,
+    validate: {
+      isEmail: {
+        msg: 'Validation isEmail on username failed'
+      },
+    }
   },
   name: {
     type: DataTypes.STRING,

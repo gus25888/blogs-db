@@ -13,4 +13,12 @@ const validatePassword = (password) => {
 
 const encryptPassword = async (password) => await bcrypt.hash(password, saltRounds)
 
-module.exports = { encryptPassword, validatePassword }
+/**
+ *
+ * @param {string} passwordSent
+ * @param {string} passwordHashStored
+ * @returns boolean
+ */
+const checkPassword = async (passwordSent, passwordHashStored) => await bcrypt.compare(passwordSent, passwordHashStored)
+
+module.exports = { checkPassword, encryptPassword, validatePassword }

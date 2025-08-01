@@ -19,12 +19,7 @@ router.get('/', async (req, res) => {
 router.post('/', async (req, res, next) => {
   try {
     let { username, name, password } = req.body
-    if (username.length < 4 || username.length > 10) {
-      return res.status(400).json({ error: `Username must have a between 4 and 10 characters` })
-    }
-    if (!password) {
-      password = username + '_123'
-    }
+
     const validatePasswordResult = validatePassword(password)
 
     if (validatePasswordResult) {
