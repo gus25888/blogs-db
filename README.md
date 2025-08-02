@@ -5,7 +5,7 @@ Application to manage blogs registration using a Postgres Database.
 ## Get Started
 
 ```sh
-npm clone <https://github.com/gus25888/blogs-db>
+npm clone https://github.com/gus25888/blogs-db
 cd blogs-db
 npm install
 ```
@@ -15,6 +15,7 @@ Then create a `.env` file like the example:
 ```.env
 DATABASE_URL=XXXXXXXXXXX
 PORT=xxxx
+SECRET=XXXXXXXXXXXXXXXXXXXX
 ```
 
 ## Docker Command for Postgres DB

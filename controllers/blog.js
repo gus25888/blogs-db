@@ -33,14 +33,22 @@ router.post('/', tokenExtractor, async (req, res, next) => {
   }
 })
 
-router.delete('/:id', async (req, res, next) => {
+router.delete('/:id', tokenExtractor, async (req, res, next) => {
   try {
+    const user = await User.findByPk(req.decodedToken.id)
+
     const blogFound = await Blog.findByPk(req.params.id)
+
     if (blogFound) {
+      if (blogFound.userId !== user.id) {
+        res.statusCode = 400
+        return res.send({ error: "Cannot delete a blog owned by another user" }).end()
+      }
+
       await blogFound.destroy()
-      res.status(204).end()
+      return res.status(204).end()
     } else {
-      res.status(404).end()
+      return res.status(404).end()
     }
   } catch (error) {
     next(error)
@@ -58,7 +66,7 @@ router.put('/:id', async (req, res, next) => {
 
     if (!likes || isNaN(Number(likes))) {
       res.statusCode = 400
-      res.send("likes must be a whole number").end()
+      res.send({ error: "likes must be a whole number" }).end()
     }
     blogFound.likes = Number(likes)
 
