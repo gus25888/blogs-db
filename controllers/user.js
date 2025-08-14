@@ -1,6 +1,6 @@
 const router = require('express').Router()
 const { Op } = require('sequelize')
-const { User, Blog, ReadingList } = require('../models')
+const { User, Blog } = require('../models')
 const { encryptPassword, validatePassword } = require('../util/misc')
 
 router.get('/', async (req, res) => {
@@ -11,12 +11,24 @@ router.get('/', async (req, res) => {
       model: Blog,
       attributes: { exclude: ['userId'] }
     },
-
   })
+
   res.json(users)
 })
 
 router.get('/:id', async (req, res) => {
+  let where = {}
+
+  if (req.query.read) {
+    const read = req.query.read
+    if (read === 'true' || read === 'false') {
+      where = { isRead: { [Op.eq]: read } }
+    }
+    else {
+      return res.status(400).json({ error: `read must be true or false` })
+    }
+  }
+
   const user = await User.findByPk(req.params.id, {
     attributes: ['name', 'username'],
     include: [{
@@ -31,7 +43,8 @@ router.get('/:id', async (req, res) => {
         'year',
       ],
       through: {
-        attributes: ['id', 'isRead']
+        attributes: ['id', 'isRead'],
+        where
       }
     }]
   })
@@ -73,13 +86,15 @@ router.put('/:username', async (req, res, next) => {
     }
 
     if (req.body.username.length < 4 || req.body.username.length > 10) {
-      return res.status(400).json({ error: `Username must have a between 4 and 10 characters` })
+      return res.status(400).json({ error: `Username must have between 4 and 10 characters` })
     }
-    user.username = req.body.username
 
+    user.username = req.body.username
     await user.save()
     const userUpdated = { username: user.username, name: user.name, createdAt: user.createdAt, updatedAt: user.updatedAt }
+
     return res.json(userUpdated)
+
   } catch (error) {
     next(error)
   }
