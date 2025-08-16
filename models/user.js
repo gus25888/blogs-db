@@ -27,12 +27,17 @@ User.init({
   password: {
     type: DataTypes.STRING,
     allowNull: false
+  },
+  disabled: {
+    type: DataTypes.BOOLEAN,
+    allowNull: false,
+    defaultValue: false
   }
 }, {
   sequelize,
   underscored: true,
   timestamps: true,
-  modelName: 'user'
+  modelName: 'users'
 })
 
 module.exports = User

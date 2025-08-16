@@ -2,8 +2,12 @@ const jwt = require('jsonwebtoken')
 const router = require('express').Router()
 
 const { SECRET } = require('../util/config')
-const User = require('../models/user')
 const { checkPassword } = require('../util/misc')
+
+const Session = require('../models/session')
+const User = require('../models/user')
+
+const TOKEN_EXPIRATION = 60 * 60
 
 router.post('/', async (request, response) => {
   const { username, password } = request.body
@@ -12,6 +16,13 @@ router.post('/', async (request, response) => {
       username: username
     }
   })
+
+  if (user.disabled) {
+    return response.status(401).json({
+      error: 'account disabled, please contact admin'
+    })
+  }
+
   const passwordCorrect = user === null
     ? false
     : await checkPassword(password, user.password)
@@ -27,7 +38,10 @@ router.post('/', async (request, response) => {
     id: user.id,
   }
 
-  const token = jwt.sign(userForToken, SECRET, { expiresIn: 60 * 60 })
+  const expirationDate = new Date(Date.now() + TOKEN_EXPIRATION)
+  const token = jwt.sign(userForToken, SECRET, { expiresIn: TOKEN_EXPIRATION })
+
+  await Session.create({ token, userId: user.id, expirationDate })
 
   response
     .status(200)
