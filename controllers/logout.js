@@ -1,7 +1,7 @@
 const router = require('express').Router()
 
 const tokenExtractor = require('../middleware/tokenExtractor')
-const Session = require('../models/session')
+const { Session } = require('../models')
 
 router.delete('/', tokenExtractor, async (req, res) => {
   const userId = req.decodedToken.id
@@ -14,7 +14,7 @@ router.delete('/', tokenExtractor, async (req, res) => {
     })
   }
 
-  res.sendStatus(201)
+  res.sendStatus(200)
 })
 
 module.exports = router

@@ -1,21 +1,19 @@
 const jwt = require('jsonwebtoken')
 
 const { SECRET } = require('../util/config')
-const Session = require('../models/session')
+const { validateToken } = require('../util/tokenManagement')
 
 const tokenExtractor = async (req, res, next) => {
   const authorization = req.get('authorization')
   if (authorization && authorization.toLowerCase().startsWith('bearer ')) {
     try {
       const token = authorization.substring(7)
-      const tokenFound = await Session.findOne({ where: { token: token } })
-
-      if (!tokenFound) {
-        return res.status(401).json({ error: 'token expired' })
+      const messageTokenStatus = await validateToken(token)
+      if (messageTokenStatus) {
+        return res.status(401).json({ error: messageTokenStatus })
       }
-
       req.decodedToken = jwt.verify(token, SECRET)
-    } catch {
+    } catch (error) {
       return res.status(401).json({ error: 'token invalid' })
     }
   } else {

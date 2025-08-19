@@ -4,10 +4,9 @@ const router = require('express').Router()
 const { SECRET } = require('../util/config')
 const { checkPassword } = require('../util/misc')
 
-const Session = require('../models/session')
-const User = require('../models/user')
+const { Session, User } = require('../models')
 
-const TOKEN_EXPIRATION = 60 * 60
+const TOKEN_EXPIRATION_MINUTES = 10 * 60
 
 router.post('/', async (request, response) => {
   const { username, password } = request.body
@@ -38,8 +37,8 @@ router.post('/', async (request, response) => {
     id: user.id,
   }
 
-  const expirationDate = new Date(Date.now() + TOKEN_EXPIRATION)
-  const token = jwt.sign(userForToken, SECRET, { expiresIn: TOKEN_EXPIRATION })
+  const expirationDate = new Date(Date.now() + (TOKEN_EXPIRATION_MINUTES * 1000))
+  const token = jwt.sign(userForToken, SECRET, { expiresIn: TOKEN_EXPIRATION_MINUTES })
 
   await Session.create({ token, userId: user.id, expirationDate })
 
